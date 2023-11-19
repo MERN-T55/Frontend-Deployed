@@ -20,33 +20,43 @@ class News extends React.Component {
       let url;
 
       if (this.state.searchTerm) {
-        url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(this.state.searchTerm)}&apiKey=3aad5964299e46df80136a78b25f63be`;
+        console.log(this.state.searchTerm);
+        url = `https://news-aggregator-3fk9.onrender.com/news/?topic=${encodeURIComponent(
+          this.state.searchTerm
+        )}`;
       } else {
-        url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(this.props.newsName)}&apiKey=3aad5964299e46df80136a78b25f63be`;
+        url = `https://news-aggregator-3fk9.onrender.com/news/?topic=${encodeURIComponent(
+          this.props.newsName
+        )}`;
       }
 
       let res = await fetch(url);
-      let data = await res.json();
-      if (data && data.articles && data.articles.length > 0) {
-        let articles = data.articles;
-      
-        articles.sort((a, b) => {
-          const aValue = a[this.state.sortField];
-          const bValue = b[this.state.sortField];
-      
-          if (this.state.sortOrder === "asc") {
-            return aValue > bValue ? 1 : -1;
-          } else {
-            return aValue < bValue ? 1 : -1;
-          }
-        });
-      
-        articles = articles
-        .filter((article) => article.title && article.description && article.urlToImage)
+      let articles = await res.json();
+
+      articles.sort((a, b) => {
+        const aValue = a[this.state.sortField];
+        const bValue = b[this.state.sortField];
+
+        if (this.state.sortOrder === "asc") {
+          return aValue > bValue ? 1 : -1;
+        } else {
+          return aValue < bValue ? 1 : -1;
+        }
+      });
+
+      articles = articles
+        .filter(
+          (article) =>
+            article.title && article.description && article.urlToImage
+        )
         .map((article) => (
           <div className="p-8" key={article.title}>
             <div className="max-w-sm rounded overflow-hidden shadow-lg">
-              <img className="w-full" src={article.urlToImage} alt={article.title} />
+              <img
+                className="w-full"
+                src={article.urlToImage}
+                alt={article.title}
+              />
               <div className="px-6 py-4">
                 <div className="font-bold text-xl mb-2">{article.title}</div>
                 <p className="text-gray-700 text-base">{article.description}</p>
@@ -69,8 +79,7 @@ class News extends React.Component {
           </div>
         ));
 
-        this.setState({ articles, loading: false });
-      }
+      this.setState({ articles, loading: false });
     } catch (error) {
       console.error("Error fetching data: ", error);
       this.setState({ loading: false });
@@ -129,7 +138,10 @@ class News extends React.Component {
   render() {
     return (
       <div className="mx-4 p-2">
-        <form onSubmit={this.handleSearchSubmit} style={{ marginBottom: "8px" }}>
+        <form
+          onSubmit={this.handleSearchSubmit}
+          style={{ marginBottom: "8px" }}
+        >
           <input
             type="text"
             value={this.state.searchTerm}
@@ -137,7 +149,10 @@ class News extends React.Component {
             placeholder="Search for news..."
             className="text-base h-10"
           />
-          <button type="submit" className="bg-blue-500 text-white p-2 ml-2 rounded h-10">
+          <button
+            type="submit"
+            className="bg-blue-500 text-white p-2 ml-2 rounded h-10"
+          >
             Search
           </button>
         </form>
@@ -166,14 +181,22 @@ class News extends React.Component {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-1 display: flex align-items: center">
           {this.state.loading ? (
-            <img src={spinner} alt="Loading" style={{ width: "300px", margin: "auto" }} />
+            <img
+              src={spinner}
+              alt="Loading"
+              style={{ width: "300px", margin: "auto" }}
+            />
           ) : (
             this.state.articles
           )}
         </div>
 
-        <button className="font-bold text-xl mb-2" onClick={() => this.fetchData()}>
-          <i className="fas fa-sync"></i> <h1 style={{ color: "grey", margin: "auto" }}>Fetching DATA</h1>
+        <button
+          className="font-bold text-xl mb-2"
+          onClick={() => this.fetchData()}
+        >
+          <i className="fas fa-sync"></i>{" "}
+          <h1 style={{ color: "grey", margin: "auto" }}>Fetching DATA</h1>
         </button>
       </div>
     );
